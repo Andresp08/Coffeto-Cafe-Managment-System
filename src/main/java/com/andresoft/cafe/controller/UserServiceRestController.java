@@ -1,6 +1,8 @@
 package com.andresoft.cafe.controller;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.andresoft.cafe.service.interfaces.IUserService;
 import com.andresoft.cafe.utils.constants.CafeConstants;
 import com.andresoft.cafe.utils.response.CafeUtils;
+import com.andresoft.cafe.wrapper.UserWrapper;
 
 @RestController
 @RequestMapping(path = "/user")
@@ -51,5 +54,34 @@ public class UserServiceRestController {
             e.printStackTrace();
             return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @RequestMapping(
+        value = "/find-all",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<List<UserWrapper>> getAllUsers() {
+        try {
+            return userService.getAllUsers();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<List<UserWrapper>>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @RequestMapping(
+        value = "/update-status",
+        method = RequestMethod.PUT,
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> updateUserStatus(@RequestBody(required = true) Map<String,String> requestMap ) {
+        try {
+            return userService.updateUserStatus(requestMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
